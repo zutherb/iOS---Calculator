@@ -7,6 +7,7 @@
 //
 
 #import "CalculatorStack.h"
+#import "CalculatorStackElement.h"
 
 @interface CalculatorStack()
 @property (nonatomic, strong) NSMutableArray *operandStack;
@@ -16,42 +17,48 @@
 
 @synthesize operandStack = _operandStack;
 
-- (NSMutableArray *) operandStack{
+- (NSMutableArray *) operandStack
+{
     if(!_operandStack){
         _operandStack = [[NSMutableArray alloc] init];
     }
     return _operandStack;
 }
 
-- (void) pushOperand : (double) operand{
-    NSNumber *operandObject = [NSNumber numberWithDouble:operand];
-    [self.operandStack addObject:operandObject];
+- (void) pushOperand : (double) operand : (NSString *) operation{
+    CalculatorStackElement* element =[[CalculatorStackElement alloc] init:operand :operation];
+    [self.operandStack addObject:element];
 
 };
 
-- (double) popOperand{
-    NSNumber *operandObject = [self.operandStack lastObject];
-    if(operandObject) [self.operandStack removeLastObject];
-    return [operandObject doubleValue];
+- (CalculatorStackElement*) getAndRemoveFirstOperand
+{
+    CalculatorStackElement *operandObject = [self.operandStack objectAtIndex:0];
+    if(operandObject) [self.operandStack removeObjectAtIndex:0];
+    return operandObject;
 }
 
-- (double) performOperation : (NSString *) operation{
-    double result = 0;
-    if([operation isEqualToString:@"+"]){
-        result = [self popOperand] + [self popOperand];
-    } else if ([operation isEqualToString:@"*"]){
-        result = [self popOperand] * [self popOperand];
-    } else if ([operation isEqualToString:@"-"]){
-        double subtrahend = [self popOperand];
-        result = [self popOperand] - subtrahend;
-    } else if ([operation isEqualToString:@"/"]){
-        double divisor = [self popOperand];
-        if (divisor) result = [self popOperand] / divisor;
+- (double) performOperation{
+    if([self.operandStack count] > 1){
+        CalculatorStackElement *operandObject1 = [self getAndRemoveFirstOperand];
+        if([@"*" isEqualToString:operandObject1.operation]){
+            CalculatorStackElement *operandObject2 = [self getAndRemoveFirstOperand];
+            return operandObject1.operand * operandObject2.operand;
+        } else if([@"/" isEqualToString:operandObject1.operation]){
+            CalculatorStackElement *operandObject2 = [self getAndRemoveFirstOperand];
+            if(!operandObject2.operand) return 0;
+            return operandObject1.operand / operandObject2.operand;
+        } else if([@"+" isEqualToString:operandObject1.operation]){
+            CalculatorStackElement *operandObject2 = [self getAndRemoveFirstOperand];
+            if(!operandObject2.operand) return 0;
+            return operandObject1.operand + operandObject2.operand;
+        } else if([@"-" isEqualToString:operandObject1.operation]){
+            CalculatorStackElement *operandObject2 = [self getAndRemoveFirstOperand];
+            if(!operandObject2.operand) return 0;
+            return operandObject1.operand - operandObject2.operand;
+        }
     }
-    
-    [self pushOperand:result];
-    
-    return result;
+    return 0;
 };
 
 @end

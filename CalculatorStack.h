@@ -10,7 +10,7 @@
 
 @interface CalculatorStack : NSObject
 
-- (void) pushOperand : (double) operand;
-- (double) performOperation : (NSString *) operation;
+- (void) pushOperand : (double) operand : (NSString *) operation;
+- (double) performOperation;
 
 @end

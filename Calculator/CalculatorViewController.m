@@ -45,18 +45,27 @@
     self.display.text = [NSString stringWithFormat:@"%.f", diplayValue];
 }
 
-- (IBAction)clearDisplay {
+- (void)clearDisplay
+{
     self.display.text = @"0";
     self.diplayValue = 0;
     self.multiplier = 1;
 }
 
-- (IBAction)operationPressed:(UIButton *)sender {
-    [self.calculatorStack pushOperand:diplayValue];
+- (IBAction)clearDisplay:(UIButton *)sender
+{
     [self clearDisplay];
-    
+}
+
+- (IBAction)operationPressed:(UIButton *)sender
+{
+
     NSString *operation = [sender currentTitle];
-    double result = [self.calculatorStack performOperation:operation];
+    [self.calculatorStack pushOperand:diplayValue:operation];
+    
+    [self clearDisplay];
+           
+    double result = [self.calculatorStack performOperation];
     self.display.text = [NSString stringWithFormat:@"%.f", result];
 }
 
